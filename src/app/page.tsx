@@ -7,10 +7,9 @@ import { DelimiterSelector } from '@/components/DelimiterSelector';
 import { CsvTable } from '@/components/CsvTable';
 import { OrientationEnforcer } from '@/components/OrientationEnforcer';
 import { parseCSV, type ParseResult } from '@/lib/csvUtils';
-// import { useToast } from "@/hooks/use-toast"; // Removed useToast
 import { AlertTriangle, FileText, Maximize2, Minimize2 } from 'lucide-react';
-import { Button } from '@/components/ui/button'; // Will use simplified Button
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Will use simplified Alert
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
 interface CsvState {
@@ -31,8 +30,7 @@ export default function CsvViewerPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originalFileContent, setOriginalFileContent] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null);
-  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(false);
-  // const { toast } = useToast(); // Removed toast
+  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(true); // Default to true for full-screen
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
     setIsLoading(true);
@@ -48,11 +46,6 @@ export default function CsvViewerPage() {
           error: result.error || "Failed to parse CSV.",
           fileName: fileName || prev.fileName,
         }));
-        // toast({ // Removed toast
-        //   title: "Parsing Error",
-        //   description: result.error || "Could not parse the CSV file. Please check the delimiter or file format.",
-        //   variant: "destructive",
-        // });
         console.error("Parsing Error:", result.error || "Could not parse the CSV file.");
       } else {
         setCsvState({
@@ -62,16 +55,12 @@ export default function CsvViewerPage() {
           fileName: fileName || csvState.fileName,
         });
         if (fileName) { 
-            // toast({ // Removed toast
-            //     title: "CSV Loaded",
-            //     description: `${fileName} loaded successfully. Headers: ${result.headers.length}, Rows: ${result.data.length}`,
-            // });
             console.log("CSV Loaded:", `${fileName} loaded successfully. Headers: ${result.headers.length}, Rows: ${result.data.length}`);
         }
       }
       setIsLoading(false);
     }, 300);
-  }, [csvState.fileName]); // Removed toast from dependencies
+  }, [csvState.fileName]);
 
 
   const handleFileLoad = (fileContent: string, fileName: string) => {
@@ -88,11 +77,6 @@ export default function CsvViewerPage() {
   
   const handleError = (message: string) => {
     setCsvState(prev => ({ ...prev, error: message, headers: [], data: [] }));
-    // toast({ // Removed toast
-    //   title: "Error",
-    //   description: message,
-    //   variant: "destructive",
-    // });
     console.error("Error:", message);
     setIsLoading(false);
   };
@@ -101,13 +85,15 @@ export default function CsvViewerPage() {
     setIsUiMinimized(prev => !prev);
   };
 
-  const showContent = !isPortrait || !originalFileContent;
+  // Show main content unless in portrait with data loaded (then OrientationEnforcer takes over)
+  const showMainContentArea = !(isPortrait && originalFileContent && !csvState.error);
+
 
   return (
     <div className="flex flex-col h-screen max-h-screen bg-background text-foreground p-2 sm:p-4 gap-3 sm:gap-4">
       <OrientationEnforcer onOrientationChange={setIsPortrait} isDataLoaded={!!originalFileContent && !csvState.error}/>
 
-      {showContent && (
+      {showMainContentArea && (
         <>
           {!isUiMinimized && (
             <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 bg-card rounded-lg shadow">
@@ -133,7 +119,7 @@ export default function CsvViewerPage() {
           )}
 
           {csvState.error && (
-            <Alert variant="destructive" className="mb-0"> {/* Using simplified Alert */}
+            <Alert variant="destructive" className="mb-0">
               <AlertTriangle className="h-5 w-5" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{csvState.error}</AlertDescription>
