@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -8,8 +7,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/ui/table"; // Will use simplified Table
 import { cn } from "@/lib/utils";
 
 interface CsvTableProps {
@@ -34,11 +32,10 @@ export function CsvTable({ headers, data }: CsvTableProps) {
     );
   }
 
-
   return (
-    <ScrollArea className="flex-grow border rounded-md shadow-sm w-full h-full">
+    <div className="flex-grow border rounded-md shadow-sm w-full h-full overflow-auto"> {/* Replaced ScrollArea with div and overflow-auto */}
       <Table className="min-w-full table-auto">
-        <TableHeader className="sticky top-0 bg-primary/90 backdrop-blur-sm z-10"> {/* Added z-index for sticky header */}
+        <TableHeader className="sticky top-0 bg-primary/90 backdrop-blur-sm z-10">
           <TableRow>
             {headers.map((header, index) => (
               <TableHead
@@ -72,6 +69,6 @@ export function CsvTable({ headers, data }: CsvTableProps) {
           CSV has headers but no data rows.
         </div>
       )}
-    </ScrollArea>
+    </div>
   );
 }

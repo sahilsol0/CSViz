@@ -7,9 +7,11 @@ import { DelimiterSelector } from '@/components/DelimiterSelector';
 import { CsvTable } from '@/components/CsvTable';
 import { OrientationEnforcer } from '@/components/OrientationEnforcer';
 import { parseCSV, type ParseResult } from '@/lib/csvUtils';
-import { useToast } from "@/hooks/use-toast";
+// import { useToast } from "@/hooks/use-toast"; // Removed useToast
 import { AlertTriangle, FileText, Maximize2, Minimize2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Will use simplified Button
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Will use simplified Alert
+
 
 interface CsvState {
   headers: string[];
@@ -30,7 +32,7 @@ export default function CsvViewerPage() {
   const [originalFileContent, setOriginalFileContent] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null);
   const [isUiMinimized, setIsUiMinimized] = useState<boolean>(false);
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed toast
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
     setIsLoading(true);
@@ -46,11 +48,12 @@ export default function CsvViewerPage() {
           error: result.error || "Failed to parse CSV.",
           fileName: fileName || prev.fileName,
         }));
-        toast({
-          title: "Parsing Error",
-          description: result.error || "Could not parse the CSV file. Please check the delimiter or file format.",
-          variant: "destructive",
-        });
+        // toast({ // Removed toast
+        //   title: "Parsing Error",
+        //   description: result.error || "Could not parse the CSV file. Please check the delimiter or file format.",
+        //   variant: "destructive",
+        // });
+        console.error("Parsing Error:", result.error || "Could not parse the CSV file.");
       } else {
         setCsvState({
           headers: result.headers,
@@ -59,15 +62,16 @@ export default function CsvViewerPage() {
           fileName: fileName || csvState.fileName,
         });
         if (fileName) { 
-            toast({
-                title: "CSV Loaded",
-                description: `${fileName} loaded successfully. Headers: ${result.headers.length}, Rows: ${result.data.length}`,
-            });
+            // toast({ // Removed toast
+            //     title: "CSV Loaded",
+            //     description: `${fileName} loaded successfully. Headers: ${result.headers.length}, Rows: ${result.data.length}`,
+            // });
+            console.log("CSV Loaded:", `${fileName} loaded successfully. Headers: ${result.headers.length}, Rows: ${result.data.length}`);
         }
       }
       setIsLoading(false);
     }, 300);
-  }, [toast, csvState.fileName]);
+  }, [csvState.fileName]); // Removed toast from dependencies
 
 
   const handleFileLoad = (fileContent: string, fileName: string) => {
@@ -84,12 +88,13 @@ export default function CsvViewerPage() {
   
   const handleError = (message: string) => {
     setCsvState(prev => ({ ...prev, error: message, headers: [], data: [] }));
-    toast({
-      title: "Error",
-      description: message,
-      variant: "destructive",
-    });
-     setIsLoading(false);
+    // toast({ // Removed toast
+    //   title: "Error",
+    //   description: message,
+    //   variant: "destructive",
+    // });
+    console.error("Error:", message);
+    setIsLoading(false);
   };
 
   const toggleUiMinimize = () => {
@@ -128,10 +133,11 @@ export default function CsvViewerPage() {
           )}
 
           {csvState.error && (
-            <div className="p-4 mb-0 text-sm text-destructive-foreground bg-destructive rounded-md flex items-center gap-2 shadow" role="alert"> {/* mb-4 removed, gap will handle */}
+            <Alert variant="destructive" className="mb-0"> {/* Using simplified Alert */}
               <AlertTriangle className="h-5 w-5" />
-              <span><strong>Error:</strong> {csvState.error}</span>
-            </div>
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{csvState.error}</AlertDescription>
+            </Alert>
           )}
           
           {isLoading && (
@@ -147,7 +153,7 @@ export default function CsvViewerPage() {
           )}
 
           {!isLoading && (
-            <main className="flex-grow flex flex-col min-h-0"> {/* min-h-0 is important for flex-grow children with overflow */}
+            <main className="flex-grow flex flex-col min-h-0">
              <CsvTable headers={csvState.headers} data={csvState.data} />
             </main>
           )}
