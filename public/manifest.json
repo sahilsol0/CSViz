@@ -1,0 +1,36 @@
+{
+  "name": "CSViz: Mobile CSV Viewer",
+  "short_name": "CSViz",
+  "description": "View CSV files easily on your mobile device.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2F5F8",
+  "theme_color": "#008080",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/app-icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/app-icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/app-icon-maskable-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/app-icon-maskable-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
