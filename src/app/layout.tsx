@@ -1,6 +1,7 @@
 import type {Metadata, Viewport} from 'next';
 import {Geist, Geist_Mono} from 'next/font/google';
 import './globals.css';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,12 +37,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#008080', // Teal for light mode
-  // For dark mode, one could add:
-  // { media: '(prefers-color-scheme: dark)', color: '#00B3B3' }
-  // but this requires an array, and next-pwa might handle it better with manifest.
-  // For simplicity, using a single theme color here that matches manifest.
-  // Consider 'color-scheme': 'light dark' if you support both and want browser UI to adapt.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#008080' }, // Teal for light mode
+    { media: '(prefers-color-scheme: dark)', color: '#00B3B3' }, // Brighter Teal for dark mode (matches --primary in dark theme)
+  ],
+  // 'color-scheme': 'light dark', // This can help adapt browser UI like scrollbars
 };
 
 export default function RootLayout({
@@ -50,9 +50,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

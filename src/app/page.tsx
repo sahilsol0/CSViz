@@ -6,8 +6,9 @@ import { FileUploader } from '@/components/FileUploader';
 import { DelimiterSelector } from '@/components/DelimiterSelector';
 import { CsvTable } from '@/components/CsvTable';
 import { OrientationEnforcer } from '@/components/OrientationEnforcer';
+import { ThemeToggleButton } from '@/components/ThemeToggleButton';
 import { parseCSV, type ParseResult } from '@/lib/csvUtils';
-import { AlertTriangle, FileText, Maximize2, Minimize2 } from 'lucide-react';
+import { AlertTriangle, FileText, Maximize2, Minimize2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -30,20 +31,33 @@ export default function CsvViewerPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originalFileContent, setOriginalFileContent] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null);
-  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(false); // UI not minimized by default
+  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(false);
+
 
   useEffect(() => {
-    // Set UI minimized state based on orientation
-    // Fullscreen (UI minimized) in landscape, not fullscreen (UI visible) in portrait
-    if (isPortrait !== null) { 
-      setIsUiMinimized(!isPortrait); 
+    // Determine initial UI minimized state based on orientation
+    // Minimized in landscape, not minimized in portrait or if orientation is unknown
+    if (typeof window !== "undefined") {
+      const currentIsPortrait = window.matchMedia("(orientation: portrait)").matches;
+      setIsPortrait(currentIsPortrait); // Set initial portrait state
+      setIsUiMinimized(!currentIsPortrait); // Minimize if landscape
+    } else {
+      setIsPortrait(false); // Assume landscape on server
+      setIsUiMinimized(true); // Minimize by default on server (landscape assumption)
     }
-  }, [isPortrait]); 
+  }, []);
+
+
+  const handleOrientationChange = useCallback((newIsPortrait: boolean) => {
+    setIsPortrait(newIsPortrait);
+    // Automatically minimize UI in landscape, expand in portrait
+    setIsUiMinimized(!newIsPortrait);
+  }, []);
 
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
     setIsLoading(true);
-    setCsvState(prev => ({ ...prev, error: null })); 
+    setCsvState(prev => ({ ...prev, error: null }));
 
     // Simulating async parsing
     setTimeout(() => {
@@ -65,7 +79,7 @@ export default function CsvViewerPage() {
         });
       }
       setIsLoading(false);
-    }, 300); 
+    }, 300);
   }, [csvState.fileName]);
 
 
@@ -96,7 +110,7 @@ export default function CsvViewerPage() {
 
   return (
     <div className="flex flex-col h-screen max-h-screen bg-background text-foreground p-2 sm:p-4 gap-3 sm:gap-4">
-      <OrientationEnforcer onOrientationChange={setIsPortrait} isDataLoaded={!!originalFileContent && !csvState.error}/>
+      <OrientationEnforcer onOrientationChange={handleOrientationChange} isDataLoaded={!!originalFileContent && !csvState.error}/>
 
       {showMainContentArea && (
         <>
@@ -105,9 +119,10 @@ export default function CsvViewerPage() {
               <h1 className="text-2xl font-semibold text-primary flex items-center">
                 <FileText className="w-7 h-7 mr-2" /> CSViz
               </h1>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
                 <FileUploader onFileLoad={handleFileLoad} isLoading={isLoading} onError={handleError} />
                 <DelimiterSelector value={delimiter} onChange={handleDelimiterChange} disabled={isLoading || !originalFileContent} />
+                <ThemeToggleButton />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -159,9 +174,9 @@ export default function CsvViewerPage() {
               onClick={toggleUiMinimize}
               className="fixed bottom-4 right-4 z-50 rounded-full w-14 h-14 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
               size="icon"
-              aria-label="Expand Controls"
+              aria-label="Show Controls"
             >
-              <Minimize2 className="h-7 w-7" />
+              <Settings2 className="h-7 w-7" /> {/* Changed from Minimize2 to represent settings/controls */}
             </Button>
           )}
         </>
