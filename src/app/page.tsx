@@ -30,7 +30,16 @@ export default function CsvViewerPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originalFileContent, setOriginalFileContent] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null);
-  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(true); // Default to true for full-screen
+  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(true); // Default to true, will be adjusted by orientation
+
+  useEffect(() => {
+    // Set UI minimized state based on orientation
+    // Fullscreen (UI minimized) in landscape, not fullscreen (UI visible) in portrait
+    if (isPortrait !== null) { // Ensure orientation is determined
+      setIsUiMinimized(!isPortrait); 
+    }
+  }, [isPortrait]); // Re-run when orientation changes
+
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
     setIsLoading(true);
@@ -86,7 +95,7 @@ export default function CsvViewerPage() {
   };
 
   // Show main content unless in portrait with data loaded (then OrientationEnforcer takes over)
-  const showMainContentArea = !(isPortrait && originalFileContent && !csvState.error);
+  const showMainContentArea = !(isPortrait === true && originalFileContent && !csvState.error);
 
 
   return (
@@ -166,3 +175,4 @@ export default function CsvViewerPage() {
     </div>
   );
 }
+
