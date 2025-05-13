@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -73,4 +72,3 @@ export function CsvTable({ headers, data }: CsvTableProps) {
     </div>
   );
 }
-
