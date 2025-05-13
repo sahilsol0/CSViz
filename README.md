@@ -20,25 +20,6 @@ CSViz is a web application designed for easily viewing and interacting with CSV 
 *   **ShadCN UI:** A collection of beautifully designed, accessible, and customizable UI components.
 *   **Lucide React:** For clean and consistent icons.
 
-## Getting Started
-
-To run CSViz locally for development:
-
-1.  **Install dependencies:**
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
-
-2.  **Run the development server:**
-    ```bash
-    npm run dev
-    # or
-    yarn dev
-    ```
-    This will typically start the application on `http://localhost:9002`.
-
 ## How It Works
 
 1.  **Upload a CSV file:** Click the "Load CSV" button and select your file.
