@@ -30,21 +30,22 @@ export default function CsvViewerPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originalFileContent, setOriginalFileContent] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null);
-  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(true); // Default to true, will be adjusted by orientation
+  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(false); // UI not minimized by default
 
   useEffect(() => {
     // Set UI minimized state based on orientation
     // Fullscreen (UI minimized) in landscape, not fullscreen (UI visible) in portrait
-    if (isPortrait !== null) { // Ensure orientation is determined
+    if (isPortrait !== null) { 
       setIsUiMinimized(!isPortrait); 
     }
-  }, [isPortrait]); // Re-run when orientation changes
+  }, [isPortrait]); 
 
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
     setIsLoading(true);
     setCsvState(prev => ({ ...prev, error: null })); 
 
+    // Simulating async parsing
     setTimeout(() => {
       const result: ParseResult = parseCSV(fileContent, currentDelimiter);
       if (result.error) {
@@ -55,7 +56,6 @@ export default function CsvViewerPage() {
           error: result.error || "Failed to parse CSV.",
           fileName: fileName || prev.fileName,
         }));
-        console.error("Parsing Error:", result.error || "Could not parse the CSV file.");
       } else {
         setCsvState({
           headers: result.headers,
@@ -63,12 +63,9 @@ export default function CsvViewerPage() {
           error: null,
           fileName: fileName || csvState.fileName,
         });
-        if (fileName) { 
-            console.log("CSV Loaded:", `${fileName} loaded successfully. Headers: ${result.headers.length}, Rows: ${result.data.length}`);
-        }
       }
       setIsLoading(false);
-    }, 300);
+    }, 300); 
   }, [csvState.fileName]);
 
 
@@ -86,7 +83,6 @@ export default function CsvViewerPage() {
   
   const handleError = (message: string) => {
     setCsvState(prev => ({ ...prev, error: message, headers: [], data: [] }));
-    console.error("Error:", message);
     setIsLoading(false);
   };
 
@@ -106,23 +102,21 @@ export default function CsvViewerPage() {
         <>
           {!isUiMinimized && (
             <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 bg-card rounded-lg shadow">
-              <div className="flex items-center justify-between sm:justify-start">
-                <h1 className="text-2xl font-semibold text-primary flex items-center">
-                  <FileText className="w-7 h-7 mr-2" /> CSViz
-                </h1>
+              <h1 className="text-2xl font-semibold text-primary flex items-center">
+                <FileText className="w-7 h-7 mr-2" /> CSViz
+              </h1>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+                <FileUploader onFileLoad={handleFileLoad} isLoading={isLoading} onError={handleError} />
+                <DelimiterSelector value={delimiter} onChange={handleDelimiterChange} disabled={isLoading || !originalFileContent} />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={toggleUiMinimize}
                   aria-label="Maximize Data View"
-                  className="text-muted-foreground hover:text-primary sm:ml-2"
+                  className="text-muted-foreground hover:text-primary"
                 >
                   <Maximize2 className="h-5 w-5" />
                 </Button>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
-                <FileUploader onFileLoad={handleFileLoad} isLoading={isLoading} onError={handleError} />
-                <DelimiterSelector value={delimiter} onChange={handleDelimiterChange} disabled={isLoading || !originalFileContent} />
               </div>
             </header>
           )}
@@ -148,7 +142,7 @@ export default function CsvViewerPage() {
           )}
 
           {!isLoading && (
-            <main className="flex-grow flex flex-col min-h-0">
+            <main className="flex-grow flex flex-col min-h-0"> {/* Ensure main can shrink and grow */}
              <CsvTable headers={csvState.headers} data={csvState.data} />
             </main>
           )}
@@ -175,4 +169,3 @@ export default function CsvViewerPage() {
     </div>
   );
 }
-
