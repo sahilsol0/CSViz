@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -9,6 +10,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface CsvTableProps {
   headers: string[];
@@ -34,9 +36,9 @@ export function CsvTable({ headers, data }: CsvTableProps) {
 
 
   return (
-    <ScrollArea className="flex-grow border rounded-md shadow-sm w-full h-[calc(100vh-180px)] sm:h-[calc(100vh-150px)]">
+    <ScrollArea className="flex-grow border rounded-md shadow-sm w-full h-full">
       <Table className="min-w-full table-auto">
-        <TableHeader className="sticky top-0 bg-primary/90 backdrop-blur-sm">
+        <TableHeader className="sticky top-0 bg-primary/90 backdrop-blur-sm z-10"> {/* Added z-index for sticky header */}
           <TableRow>
             {headers.map((header, index) => (
               <TableHead

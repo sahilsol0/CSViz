@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -7,7 +8,8 @@ import { CsvTable } from '@/components/CsvTable';
 import { OrientationEnforcer } from '@/components/OrientationEnforcer';
 import { parseCSV, type ParseResult } from '@/lib/csvUtils';
 import { useToast } from "@/hooks/use-toast";
-import { AlertTriangle, FileText } from 'lucide-react';
+import { AlertTriangle, FileText, Maximize2, Minimize2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface CsvState {
   headers: string[];
@@ -27,6 +29,7 @@ export default function CsvViewerPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originalFileContent, setOriginalFileContent] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null);
+  const [isUiMinimized, setIsUiMinimized] = useState<boolean>(false);
   const { toast } = useToast();
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
@@ -89,6 +92,10 @@ export default function CsvViewerPage() {
      setIsLoading(false);
   };
 
+  const toggleUiMinimize = () => {
+    setIsUiMinimized(prev => !prev);
+  };
+
   const showContent = !isPortrait || !originalFileContent;
 
   return (
@@ -97,18 +104,31 @@ export default function CsvViewerPage() {
 
       {showContent && (
         <>
-          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 bg-card rounded-lg shadow">
-            <h1 className="text-2xl font-semibold text-primary flex items-center">
-              <FileText className="w-7 h-7 mr-2" /> CSViz
-            </h1>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
-              <FileUploader onFileLoad={handleFileLoad} isLoading={isLoading} onError={handleError} />
-              <DelimiterSelector value={delimiter} onChange={handleDelimiterChange} disabled={isLoading || !originalFileContent} />
-            </div>
-          </header>
+          {!isUiMinimized && (
+            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 bg-card rounded-lg shadow">
+              <div className="flex items-center justify-between sm:justify-start">
+                <h1 className="text-2xl font-semibold text-primary flex items-center">
+                  <FileText className="w-7 h-7 mr-2" /> CSViz
+                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleUiMinimize}
+                  aria-label="Maximize Data View"
+                  className="text-muted-foreground hover:text-primary sm:ml-2"
+                >
+                  <Maximize2 className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+                <FileUploader onFileLoad={handleFileLoad} isLoading={isLoading} onError={handleError} />
+                <DelimiterSelector value={delimiter} onChange={handleDelimiterChange} disabled={isLoading || !originalFileContent} />
+              </div>
+            </header>
+          )}
 
           {csvState.error && (
-            <div className="p-4 mb-4 text-sm text-destructive-foreground bg-destructive rounded-md flex items-center gap-2 shadow" role="alert">
+            <div className="p-4 mb-0 text-sm text-destructive-foreground bg-destructive rounded-md flex items-center gap-2 shadow" role="alert"> {/* mb-4 removed, gap will handle */}
               <AlertTriangle className="h-5 w-5" />
               <span><strong>Error:</strong> {csvState.error}</span>
             </div>
@@ -127,16 +147,27 @@ export default function CsvViewerPage() {
           )}
 
           {!isLoading && (
-            <main className="flex-grow flex flex-col min-h-0">
+            <main className="flex-grow flex flex-col min-h-0"> {/* min-h-0 is important for flex-grow children with overflow */}
              <CsvTable headers={csvState.headers} data={csvState.data} />
             </main>
           )}
           
-          {csvState.fileName && !csvState.error && (
+          {!isUiMinimized && csvState.fileName && !csvState.error && (
             <footer className="text-xs text-muted-foreground p-2 text-center sm:text-left">
               Displaying: <strong>{csvState.fileName}</strong> ({csvState.headers.length} columns, {csvState.data.length} rows)
               <p className="text-[0.6rem] mt-1">Note: This viewer uses a simple parser. Complex CSVs with quoted delimiters might not display correctly.</p>
             </footer>
+          )}
+
+          {isUiMinimized && (
+            <Button
+              onClick={toggleUiMinimize}
+              className="fixed bottom-4 right-4 z-50 rounded-full w-14 h-14 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
+              size="icon"
+              aria-label="Expand Controls"
+            >
+              <Minimize2 className="h-7 w-7" />
+            </Button>
           )}
         </>
       )}
