@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -7,7 +8,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table"; // Will use simplified Table
+} from "@/components/ui/table"; 
 import { cn } from "@/lib/utils";
 
 interface CsvTableProps {
@@ -33,7 +34,7 @@ export function CsvTable({ headers, data }: CsvTableProps) {
   }
 
   return (
-    <div className="flex-grow border rounded-md shadow-sm w-full h-full overflow-auto"> {/* Replaced ScrollArea with div and overflow-auto */}
+    <div className="flex-grow border rounded-md shadow-sm w-full h-full overflow-auto">
       <Table className="min-w-full table-auto">
         <TableHeader className="sticky top-0 bg-primary/90 backdrop-blur-sm z-10">
           <TableRow>
@@ -72,3 +73,4 @@ export function CsvTable({ headers, data }: CsvTableProps) {
     </div>
   );
 }
+
