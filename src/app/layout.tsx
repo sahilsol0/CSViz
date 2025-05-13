@@ -1,7 +1,9 @@
+
 import type {Metadata, Viewport} from 'next';
 import {Geist, Geist_Mono} from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { themes as appThemes } from '@/lib/themes';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -44,6 +46,8 @@ export const viewport: Viewport = {
   // 'color-scheme': 'light dark', // This can help adapt browser UI like scrollbars
 };
 
+const allThemeValues = ["light", "dark", "system", ...appThemes.map(t => t.value)];
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -57,6 +61,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          themes={allThemeValues} // Inform next-themes about all available theme names
         >
           {children}
         </ThemeProvider>

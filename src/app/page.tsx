@@ -6,7 +6,7 @@ import { FileUploader } from '@/components/FileUploader';
 import { DelimiterSelector } from '@/components/DelimiterSelector';
 import { CsvTable } from '@/components/CsvTable';
 import { OrientationEnforcer } from '@/components/OrientationEnforcer';
-import { ThemeToggleButton } from '@/components/ThemeToggleButton';
+import { ThemeSelector } from '@/components/ThemeSelector'; // Updated import
 import { parseCSV, type ParseResult } from '@/lib/csvUtils';
 import { AlertTriangle, FileText, Maximize2, Minimize2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,31 +35,33 @@ export default function CsvViewerPage() {
 
 
   useEffect(() => {
-    // Determine initial UI minimized state based on orientation
-    // Minimized in landscape, not minimized in portrait or if orientation is unknown
     if (typeof window !== "undefined") {
       const currentIsPortrait = window.matchMedia("(orientation: portrait)").matches;
-      setIsPortrait(currentIsPortrait); // Set initial portrait state
-      setIsUiMinimized(!currentIsPortrait); // Minimize if landscape
+      setIsPortrait(currentIsPortrait);
+      // Minimize UI if in landscape and data is loaded
+      setIsUiMinimized(!currentIsPortrait && !!originalFileContent && !csvState.error);
     } else {
-      setIsPortrait(false); // Assume landscape on server
-      setIsUiMinimized(true); // Minimize by default on server (landscape assumption)
+      setIsPortrait(false); 
+      setIsUiMinimized(true && !!originalFileContent && !csvState.error); 
     }
-  }, []);
+  }, [originalFileContent, csvState.error]);
 
 
   const handleOrientationChange = useCallback((newIsPortrait: boolean) => {
     setIsPortrait(newIsPortrait);
-    // Automatically minimize UI in landscape, expand in portrait
-    setIsUiMinimized(!newIsPortrait);
-  }, []);
+    // Automatically minimize UI in landscape if data is loaded, expand in portrait
+    if (originalFileContent && !csvState.error) {
+      setIsUiMinimized(!newIsPortrait);
+    } else {
+      setIsUiMinimized(false); // Keep UI expanded if no data or error
+    }
+  }, [originalFileContent, csvState.error]);
 
 
   const processCsv = useCallback((fileContent: string, currentDelimiter: string, fileName?: string) => {
     setIsLoading(true);
     setCsvState(prev => ({ ...prev, error: null }));
 
-    // Simulating async parsing
     setTimeout(() => {
       const result: ParseResult = parseCSV(fileContent, currentDelimiter);
       if (result.error) {
@@ -70,6 +72,7 @@ export default function CsvViewerPage() {
           error: result.error || "Failed to parse CSV.",
           fileName: fileName || prev.fileName,
         }));
+        setIsUiMinimized(false); // Show UI if error
       } else {
         setCsvState({
           headers: result.headers,
@@ -77,6 +80,13 @@ export default function CsvViewerPage() {
           error: null,
           fileName: fileName || csvState.fileName,
         });
+        // After successful load, set UI minimized state based on current orientation
+        if (typeof window !== "undefined") {
+            const currentIsPortrait = window.matchMedia("(orientation: portrait)").matches;
+            setIsUiMinimized(!currentIsPortrait);
+        } else {
+            setIsUiMinimized(true); // Default to minimized (landscape assumption) on server
+        }
       }
       setIsLoading(false);
     }, 300);
@@ -97,15 +107,22 @@ export default function CsvViewerPage() {
   
   const handleError = (message: string) => {
     setCsvState(prev => ({ ...prev, error: message, headers: [], data: [] }));
+    setOriginalFileContent(null); // Clear file content on error
     setIsLoading(false);
+    setIsUiMinimized(false); // Ensure UI is visible to show error
   };
 
   const toggleUiMinimize = () => {
-    setIsUiMinimized(prev => !prev);
+    // Only allow toggle if data is loaded and no error
+    if (originalFileContent && !csvState.error) {
+      setIsUiMinimized(prev => !prev);
+    }
   };
 
   // Show main content unless in portrait with data loaded (then OrientationEnforcer takes over)
   const showMainContentArea = !(isPortrait === true && originalFileContent && !csvState.error);
+  // Determine if the "Maximize/Show Controls" button should be visible in the header/FAB
+  const canToggleUi = originalFileContent && !csvState.error;
 
 
   return (
@@ -119,19 +136,21 @@ export default function CsvViewerPage() {
               <h1 className="text-2xl font-semibold text-primary flex items-center">
                 <FileText className="w-7 h-7 mr-2" /> CSViz
               </h1>
-              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center flex-wrap">
                 <FileUploader onFileLoad={handleFileLoad} isLoading={isLoading} onError={handleError} />
                 <DelimiterSelector value={delimiter} onChange={handleDelimiterChange} disabled={isLoading || !originalFileContent} />
-                <ThemeToggleButton />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleUiMinimize}
-                  aria-label="Maximize Data View"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <Maximize2 className="h-5 w-5" />
-                </Button>
+                <ThemeSelector /> 
+                {canToggleUi && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleUiMinimize}
+                    aria-label="Maximize Data View"
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    <Maximize2 className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
             </header>
           )}
@@ -157,7 +176,7 @@ export default function CsvViewerPage() {
           )}
 
           {!isLoading && (
-            <main className="flex-grow flex flex-col min-h-0"> {/* Ensure main can shrink and grow */}
+            <main className="flex-grow flex flex-col min-h-0">
              <CsvTable headers={csvState.headers} data={csvState.data} />
             </main>
           )}
@@ -169,14 +188,14 @@ export default function CsvViewerPage() {
             </footer>
           )}
 
-          {isUiMinimized && (
+          {isUiMinimized && canToggleUi && (
             <Button
               onClick={toggleUiMinimize}
               className="fixed bottom-4 right-4 z-50 rounded-full w-14 h-14 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
               size="icon"
               aria-label="Show Controls"
             >
-              <Settings2 className="h-7 w-7" /> {/* Changed from Minimize2 to represent settings/controls */}
+              <Settings2 className="h-7 w-7" />
             </Button>
           )}
         </>

@@ -30,7 +30,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Sidebar specific colors - can be kept or harmonized if sidebar is used */
+    /* Sidebar specific colors */
     --sidebar-background: 220 10% 98%;
     --sidebar-foreground: 220 5.3% 26.1%;
     --sidebar-primary: 180 100% 25%; /* Teal */
@@ -75,6 +75,76 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 10% 20%;
     --sidebar-ring: 180 100% 40%;
+  }
+
+  .theme-oceanic {
+    --background: 210 40% 97%;
+    --foreground: 210 40% 10%;
+    --card: 210 40% 97%;
+    --card-foreground: 210 40% 10%;
+    --popover: 210 40% 97%;
+    --popover-foreground: 210 40% 10%;
+    --primary: 200 85% 50%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 30% 90%;
+    --secondary-foreground: 210 30% 15%;
+    --muted: 210 30% 85%;
+    --muted-foreground: 210 30% 45%;
+    --accent: 190 70% 55%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 30% 80%;
+    --input: 210 30% 92%;
+    --ring: 200 85% 55%;
+    --chart-1: 200 70% 50%;
+    --chart-2: 170 60% 45%;
+    --chart-3: 220 50% 65%;
+    --chart-4: 180 40% 50%;
+    --chart-5: 210 60% 70%;
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 210 40% 10%;
+    --sidebar-primary: 200 85% 50%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 190 70% 55%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 210 30% 88%;
+    --sidebar-ring: 200 85% 55%;
+  }
+
+  .theme-forest {
+    --background: 120 10% 96%;
+    --foreground: 120 25% 12%;
+    --card: 120 10% 96%;
+    --card-foreground: 120 25% 12%;
+    --popover: 120 10% 96%;
+    --popover-foreground: 120 25% 12%;
+    --primary: 130 60% 35%;
+    --primary-foreground: 120 10% 98%;
+    --secondary: 110 15% 90%;
+    --secondary-foreground: 110 20% 18%;
+    --muted: 110 15% 85%;
+    --muted-foreground: 110 20% 42%;
+    --accent: 100 50% 45%;
+    --accent-foreground: 120 10% 98%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 110 15% 80%;
+    --input: 110 15% 92%;
+    --ring: 130 60% 40%;
+    --chart-1: 130 50% 50%;
+    --chart-2: 80 60% 45%;
+    --chart-3: 40 50% 55%;
+    --chart-4: 100 30% 40%;
+    --chart-5: 140 40% 60%;
+    --sidebar-background: 120 10% 97%;
+    --sidebar-foreground: 120 25% 12%;
+    --sidebar-primary: 130 60% 35%;
+    --sidebar-primary-foreground: 120 10% 98%;
+    --sidebar-accent: 100 50% 45%;
+    --sidebar-accent-foreground: 120 10% 98%;
+    --sidebar-border: 110 15% 86%;
+    --sidebar-ring: 130 60% 40%;
   }
 }
 
