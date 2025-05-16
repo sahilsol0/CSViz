@@ -74,14 +74,16 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
-          # This is line 77 in the original file structure provided
-          # Example of setting an environment variable for the build process
-          # NEXT_PUBLIC_BASE_PATH: /your-repo-name # Set this if your site is deployed to a subpath
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+
+      - name: Export static site
+        run: ${{ steps.detect-package-manager.outputs.runner }} next export
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
+
 
   # Deployment job
   deploy:
