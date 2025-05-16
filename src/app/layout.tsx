@@ -3,6 +3,7 @@ import type {Metadata, Viewport} from 'next';
 import {Geist, Geist_Mono} from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+// appThemes will now be an empty array, so allThemeValues will effectively be ["light", "dark", "system"]
 import { themes as appThemes } from '@/lib/themes';
 
 const geistSans = Geist({
@@ -46,6 +47,8 @@ export const viewport: Viewport = {
   // 'color-scheme': 'light dark', // This can help adapt browser UI like scrollbars
 };
 
+// This will now correctly resolve to ["light", "dark", "system"]
+// as appThemes from @/lib/themes is an empty array.
 const allThemeValues = ["light", "dark", "system", ...appThemes.map(t => t.value)];
 
 export default function RootLayout({

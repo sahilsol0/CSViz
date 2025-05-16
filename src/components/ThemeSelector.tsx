@@ -4,7 +4,8 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useTheme } from "next-themes";
 import { Palette } from "lucide-react";
-import { themes as appThemes, type Theme } from "@/lib/themes"; // Import Theme type
+// appThemes will now be an empty array from the modified src/lib/themes.ts
+import { themes as appThemes, type Theme } from "@/lib/themes";
 import { Label } from "@/components/ui/label";
 
 // Define a type for the theme options in the selector
@@ -14,7 +15,7 @@ interface DisplayThemeOption {
 }
 
 export function ThemeSelector() {
-  const { theme, setTheme, systemTheme } = useTheme(); // Added systemTheme
+  const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,14 +32,15 @@ export function ThemeSelector() {
     );
   }
 
+  // Since appThemes is now empty, this will only include System, Light, and Dark
   const displayThemes: DisplayThemeOption[] = [
     {
       name: systemTheme ? `System (${systemTheme.charAt(0).toUpperCase() + systemTheme.slice(1)})` : "System",
       value: "system",
     },
-    { name: "Light", value: "light" }, // Simplified name
-    { name: "Dark", value: "dark" },   // Simplified name
-    // Map appThemes to ensure they only include name and value for DisplayThemeOption type
+    { name: "Light", value: "light" },
+    { name: "Dark", value: "dark" },
+    // This spread will add no items as appThemes is empty
     ...appThemes.map((t: Theme) => ({ name: t.name, value: t.value })),
   ];
 
@@ -46,8 +48,6 @@ export function ThemeSelector() {
     setTheme(event.target.value);
   };
 
-  // `theme` from useTheme can be 'system', 'light', 'dark', or a custom theme value.
-  // If it's undefined (e.g., initial load with system default), fallback to "system".
   const currentSelectValue = theme ?? "system";
 
   return (
