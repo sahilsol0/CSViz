@@ -28,7 +28,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Increased from 0.5rem */
 
     /* Sidebar specific colors */
     --sidebar-background: 210 25% 98%;
@@ -66,6 +66,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --radius: 0.75rem; /* Increased from 0.5rem */
 
     --sidebar-background: 210 15% 14%; /* Adjusted to match new dark background */
     --sidebar-foreground: 220 10% 85%;
@@ -102,6 +103,7 @@
     --chart-3: 220 50% 65%; 
     --chart-4: 185 40% 50%; 
     --chart-5: 210 60% 70%; 
+    --radius: 0.75rem; /* Increased from 0.5rem */
     --sidebar-background: 210 40% 98%;
     --sidebar-foreground: 210 40% 10%;
     --sidebar-primary: 205 80% 48%;
@@ -137,6 +139,7 @@
     --chart-3: 40 50% 55%;
     --chart-4: 100 30% 40%;
     --chart-5: 140 40% 60%;
+    --radius: 0.75rem; /* Increased from 0.5rem */
     --sidebar-background: 120 10% 97%;
     --sidebar-foreground: 120 25% 12%;
     --sidebar-primary: 130 60% 35%;
