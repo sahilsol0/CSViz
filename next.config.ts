@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 import nextPWA from "@ducanh2912/next-pwa";
 
+const repoName = 'CSViz';
+
 const pwaConfig = nextPWA({
   dest: 'public',
   register: true,
@@ -9,7 +11,9 @@ const pwaConfig = nextPWA({
 });
 
 const nextConfig: NextConfig = {
-  output: 'export', // <-- Required for static export
+  output: 'export',
+  basePath: `/${repoName}`,
+  assetPrefix: `/${repoName}/`,
   typescript: {
     ignoreBuildErrors: true,
   },
