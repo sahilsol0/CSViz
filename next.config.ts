@@ -1,4 +1,4 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 import nextPWA from "@ducanh2912/next-pwa";
 
 const pwaConfig = nextPWA({
@@ -6,14 +6,10 @@ const pwaConfig = nextPWA({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
-  // Optionally, add more workbox options here if needed
-  // workboxOptions: {
-  //   disableDevLogs: true,
-  // },
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'export', // <-- Required for static export
   typescript: {
     ignoreBuildErrors: true,
   },
